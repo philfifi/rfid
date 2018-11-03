@@ -81,7 +81,8 @@
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>
 #include <Arduino.h>
-#include <SPI.h>
+//#include <SPI.h>
+#include "SoftSPI.h"
 
 // Firmware data for self-test
 // Reference values based on firmware version
@@ -331,9 +332,12 @@ public:
 	// Functions for setting up the Arduino
 	/////////////////////////////////////////////////////////////////////////////////////
 	MFRC522(const byte chipSelectPin, const byte resetPowerDownPin,
-			SPIClass *spiClass = &SPI, const SPISettings spiSettings = SPISettings(SPI_CLOCK_DIV4, MSBFIRST, SPI_MODE0))
+			SoftSPI *spiClass, const SPISettings spiSettings)
 			: _chipSelectPin(chipSelectPin), _resetPowerDownPin(resetPowerDownPin),
 			  _spiClass(spiClass), _spiSettings(spiSettings) {};
+	MFRC522(const byte chipSelectPin, const byte resetPowerDownPin)
+			: _chipSelectPin(chipSelectPin), _resetPowerDownPin(resetPowerDownPin),
+			  _spiClass(&SPI), _spiSettings(SPISettings(SPI_CLOCK_DIV4, MSBFIRST, SPI_MODE0)) {};
 	MFRC522() : MFRC522(UNUSED_PIN, UNUSED_PIN) {};
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -425,7 +429,7 @@ protected:
 	byte _resetPowerDownPin;	// Arduino pin connected to MFRC522's reset and power down input (Pin 6, NRSTPD, active low)
 
 	// SPI communication
-	SPIClass *_spiClass;		// SPI class which abstracts hardware.
+	SoftSPI *_spiClass;		// SPI class which abstracts hardware.
 	const SPISettings _spiSettings;	// SPI settings.
 
 	// Functions for communicating with MIFARE PICCs
